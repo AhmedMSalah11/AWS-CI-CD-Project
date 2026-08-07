@@ -58,11 +58,20 @@ Developer
 
 # Deployment Workflow
 
-## 1. Source Control
+# Deployment Workflow
 
-The application source code is stored in a Bitbucket repository.
-
-Every push to the selected branch automatically triggers the deployment pipeline.
+1. A developer pushes changes to the Bitbucket repository.
+2. AWS CodePipeline detects the new commit.
+3. CodePipeline retrieves the latest source code.
+4. AWS CodeBuild starts the build process.
+5. CodeBuild executes the commands defined in `build.yml`.
+6. Application dependencies are installed and the application is built.
+7. The deployment artifact is generated.
+8. The artifact is stored in Amazon S3.
+9. AWS Elastic Beanstalk retrieves and deploys the new application version.
+10. Elastic Beanstalk performs health checks on the deployed environment.
+11. The environment status is monitored to verify that the application is healthy.
+12. Deployment logs and status can be reviewed through CodePipeline, CodeBuild, and Elastic Beanstalk.
 
 ---
 
@@ -95,6 +104,40 @@ During this stage:
 The generated artifact is uploaded to Amazon S3.
 
 ---
+## Build Configuration
+
+The AWS CodeBuild process is configured using a `buildspec.yml` file.
+
+The `buildspec.yml` file defines the commands and configuration required to build and package the application.
+
+It is responsible for:
+
+* Installing the required dependencies
+* Preparing the application for deployment
+* Running the required build commands
+* Defining the build output/artifacts
+* Preparing the deployment package for Elastic Beanstalk
+
+The build configuration is version-controlled together with the project source code, allowing the build process to be reproduced consistently across deployments.
+
+Example structure:
+
+```yaml
+version: 0.2
+
+phases:
+  install:
+    # Install dependencies
+
+  build:
+    # Build application
+
+artifacts:
+  # Define deployment artifacts
+```
+
+> The exact commands and phases depend on the application's technology stack.
+--
 
 ## 4. Artifact Storage
 
@@ -118,6 +161,24 @@ Elastic Beanstalk handles:
 * Rolling updates
 * Health monitoring
 
+---
+## Application Health Checks
+
+Health checks are used to verify that the deployed application is running correctly after deployment.
+
+Elastic Beanstalk continuously monitors the health of the application environment and reports its current status.
+
+The health status helps verify:
+
+* Application availability
+* Instance health
+* Application response
+* Deployment status
+* Potential application or infrastructure failures
+
+After a successful deployment, the Elastic Beanstalk environment is checked to ensure that the application reaches a healthy state before considering the deployment successful.
+
+This provides an additional validation layer after the deployment process.
 ---
 
 ## 6. Database
