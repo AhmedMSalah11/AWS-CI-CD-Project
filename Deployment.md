@@ -58,8 +58,6 @@ Developer
 
 # Deployment Workflow
 
-# Deployment Workflow
-
 1. A developer pushes changes to the Bitbucket repository.
 2. AWS CodePipeline detects the new commit.
 3. CodePipeline retrieves the latest source code.
